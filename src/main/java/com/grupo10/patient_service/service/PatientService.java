@@ -1,12 +1,18 @@
 package com.grupo10.patient_service.service;
 
+import com.grupo10.patient_service.dto.PatientRequestDto;
+import com.grupo10.patient_service.dto.PatientResponseDto;
 import com.grupo10.patient_service.exception.DuplicateResourceException;
 import com.grupo10.patient_service.exception.ResourceNotFoundException;
 import com.grupo10.patient_service.model.Patient;
-import com.grupo10.patient_service.dto.PatientRequestDto;
-import com.grupo10.patient_service.dto.PatientResponseDto;
 import com.grupo10.patient_service.repository.PatientRepository;
+import com.grupo10.patient_service.util.UpdateUtil;
+import org.springframework.stereotype.Service;
+import com.grupo10.patient_service.constants.GlobalConstants;
 
+import java.util.List;
+
+@Service
 public class PatientService {
 
     private final PatientRepository patientRepository;
@@ -15,9 +21,9 @@ public class PatientService {
         this.patientRepository = patientRepository;
     }
 
-    public PatientResponseDto crearPaciente(PatientRequestDto request) {
+    public PatientResponseDto createPatient(PatientRequestDto request) {
         if (patientRepository.existsByRut(request.getRut())) {
-            throw new DuplicateResourceException("Ya existe un paciente registrado con el RUT ingresado");
+            throw new DuplicateResourceException(GlobalConstants.DUPLICATE_RUT);
         }
 
         Patient paciente = new Patient();
@@ -31,17 +37,38 @@ public class PatientService {
         paciente.setTelefonoSecundario(request.getTelefonoSecundario());
 
         Patient pacienteGuardado = patientRepository.save(paciente);
-
-        return mapearAResponse(pacienteGuardado);
+        return mapToResponse(pacienteGuardado);
     }
 
-    public PatientResponseDto obtenerPacientePorId(Long id) {
+    public PatientResponseDto getPatientById(Long id) {
         Patient paciente = patientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado con el ID: " + id));
-        return mapearAResponse(paciente);
+                .orElseThrow(() -> new ResourceNotFoundException(GlobalConstants.PATIENT_NOT_FOUND + id));
+        return mapToResponse(paciente);
     }
 
-    private PatientResponseDto mapearAResponse(Patient paciente) {
+    public List<PatientResponseDto> getAllPatients() {
+        return patientRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public PatientResponseDto updatePatient(Long id, PatientRequestDto request) {
+        Patient paciente = patientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(GlobalConstants.PATIENT_NOT_FOUND + id));
+
+        UpdateUtil.copyNonNullProperties(request, paciente);
+
+        Patient pacienteActualizado = patientRepository.save(paciente);
+        return mapToResponse(pacienteActualizado);
+    }
+
+    public void deletePatient(Long id) {
+        Patient paciente = patientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(GlobalConstants.PATIENT_NOT_FOUND + id));
+        patientRepository.delete(paciente);
+    }
+
+    private PatientResponseDto mapToResponse(Patient paciente) {
         PatientResponseDto response = new PatientResponseDto();
         response.setIdPaciente(paciente.getId());
         response.setIdUsuario(paciente.getIdUsuario());
