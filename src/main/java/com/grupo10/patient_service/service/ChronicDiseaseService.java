@@ -12,6 +12,11 @@ import com.grupo10.patient_service.repository.DiseaseRepository;
 import com.grupo10.patient_service.repository.MedicalThresholdRepository;
 import com.grupo10.patient_service.repository.PatientDiseaseRepository;
 import com.grupo10.patient_service.repository.PatientRepository;
+import java.time.LocalDate;
+import java.time.Period;
+
+import java.time.ZoneId;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,22 +95,10 @@ public class ChronicDiseaseService {
         return response;
     }
 
-    private Integer calculateAge(java.util.Date fechaNacimiento) {
+    private Integer calculateAge(LocalDate fechaNacimiento) {
         if (fechaNacimiento == null) {
             return 0;
         }
-        java.util.Calendar nacimiento = java.util.Calendar.getInstance();
-        nacimiento.setTime(fechaNacimiento);
-        java.util.Calendar hoy = java.util.Calendar.getInstance();
-
-        int edad = hoy.get(java.util.Calendar.YEAR) - nacimiento.get(java.util.Calendar.YEAR);
-
-        if (hoy.get(java.util.Calendar.MONTH) < nacimiento.get(java.util.Calendar.MONTH) ||
-                (hoy.get(java.util.Calendar.MONTH) == nacimiento.get(java.util.Calendar.MONTH) &&
-                        hoy.get(java.util.Calendar.DAY_OF_MONTH) < nacimiento.get(java.util.Calendar.DAY_OF_MONTH))) {
-            edad--;
-        }
-
-        return edad;
+        return Period.between(fechaNacimiento, LocalDate.now(ZoneId.systemDefault())).getYears();
     }
 }

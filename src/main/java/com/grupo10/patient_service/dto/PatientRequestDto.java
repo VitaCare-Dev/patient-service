@@ -1,6 +1,6 @@
 package com.grupo10.patient_service.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import lombok.Data;
 
@@ -12,7 +12,7 @@ public class PatientRequestDto {
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private String telefonoPrincipal;
     private String telefonoSecundario;
 }

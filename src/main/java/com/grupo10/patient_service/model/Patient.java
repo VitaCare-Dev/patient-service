@@ -2,7 +2,7 @@ package com.grupo10.patient_service.model;
 
 
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 
@@ -40,7 +40,7 @@ public class Patient {
     private String apellidoMaterno;
 
     @Column(name = "fecha_nacimiento")
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
 
     @Column(name = "telefono_principal")
     private String telefonoPrincipal;
