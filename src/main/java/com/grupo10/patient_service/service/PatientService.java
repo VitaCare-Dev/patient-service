@@ -4,6 +4,7 @@ import com.grupo10.patient_service.dto.PatientRequestDto;
 import com.grupo10.patient_service.dto.PatientResponseDto;
 import com.grupo10.patient_service.exception.DuplicateResourceException;
 import com.grupo10.patient_service.exception.ResourceNotFoundException;
+import com.grupo10.patient_service.exception.UserNotFoundException;
 import com.grupo10.patient_service.model.Patient;
 import com.grupo10.patient_service.repository.PatientRepository;
 import com.grupo10.patient_service.util.UpdateUtil;
@@ -22,6 +23,12 @@ public class PatientService {
     }
 
     public PatientResponseDto createPatient(PatientRequestDto request) {
+        if (request.getIdUsuario() == null) {
+            throw new UserNotFoundException(GlobalConstants.USER_NOT_FOUND + "null");
+        }
+        if (patientRepository.existsByIdUsuario(request.getIdUsuario())) {
+            throw new DuplicateResourceException(GlobalConstants.DUPLICATE_USER_PATIENT);
+        }
         if (patientRepository.existsByRut(request.getRut())) {
             throw new DuplicateResourceException(GlobalConstants.DUPLICATE_RUT);
         }
