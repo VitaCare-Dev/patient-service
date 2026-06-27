@@ -20,6 +20,16 @@ import java.time.ZoneId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Servicio de lógica de negocio para el registro de enfermedades crónicas en pacientes
+ * y el cálculo de sus umbrales médicos personalizados.
+ *
+ * <p>Al asociar una enfermedad a un paciente, el servicio determina la regla médica
+ * aplicable según la edad del paciente ({@link MedicalRules}) y crea o fusiona los
+ * umbrales vitales en {@link MedicalThreshold}. Cuando existen múltiples enfermedades,
+ * la fusión adopta los valores más restrictivos: mínimo para los umbrales máximos
+ * y máximo para los umbrales mínimos.
+ */
 @Service
 public class ChronicDiseaseService {
 
@@ -28,6 +38,14 @@ public class ChronicDiseaseService {
     private final PatientDiseaseRepository patientDiseaseRepository;
     private final MedicalThresholdRepository medicalThresholdRepository;
 
+    /**
+     * Construye el servicio con los repositorios necesarios inyectados.
+     *
+     * @param patientRepository          repositorio JPA de pacientes
+     * @param diseaseRepository          repositorio JPA de enfermedades
+     * @param patientDiseaseRepository   repositorio JPA de relaciones paciente-enfermedad
+     * @param medicalThresholdRepository repositorio JPA de umbrales médicos
+     */
     public ChronicDiseaseService(PatientRepository patientRepository,
             DiseaseRepository diseaseRepository,
             PatientDiseaseRepository patientDiseaseRepository,
@@ -38,6 +56,16 @@ public class ChronicDiseaseService {
         this.medicalThresholdRepository = medicalThresholdRepository;
     }
 
+    /**
+     * Registra una enfermedad crónica a un paciente y actualiza sus umbrales médicos de forma transaccional.
+     *
+     * <p>Si no existe una regla médica definida para la combinación enfermedad-edad,
+     * la operación persiste únicamente la relación paciente-enfermedad sin modificar umbrales.
+     *
+     * @param idPaciente    identificador del paciente
+     * @param idEnfermedad  identificador de la enfermedad crónica
+     * @throws com.grupo10.patient_service.exception.ResourceNotFoundException si el paciente o la enfermedad no existen
+     */
     @Transactional
     public void registerPatientDisease(Long idPaciente, Long idEnfermedad) {
         Patient paciente = patientRepository.findById(idPaciente)
@@ -78,6 +106,13 @@ public class ChronicDiseaseService {
         }
     }
 
+    /**
+     * Recupera los umbrales médicos personalizados de un paciente.
+     *
+     * @param idPaciente identificador del paciente
+     * @return DTO con los umbrales médicos del paciente
+     * @throws com.grupo10.patient_service.exception.ResourceNotFoundException si no hay umbrales registrados para el paciente
+     */
     public MedicalThresholdResponseDto getPatientThresholds(Long idPaciente) {
         MedicalThreshold umbral = medicalThresholdRepository.findByPacienteId(idPaciente)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -95,6 +130,14 @@ public class ChronicDiseaseService {
         return response;
     }
 
+    /**
+     * Calcula la edad en años a partir de la fecha de nacimiento.
+     *
+     * <p>Devuelve {@code 0} si {@code fechaNacimiento} es nula.
+     *
+     * @param fechaNacimiento fecha de nacimiento del paciente
+     * @return edad en años completos
+     */
     private Integer calculateAge(LocalDate fechaNacimiento) {
         if (fechaNacimiento == null) {
             return 0;

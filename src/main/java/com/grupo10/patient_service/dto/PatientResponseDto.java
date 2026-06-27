@@ -4,6 +4,12 @@ import java.time.LocalDate;
 
 import lombok.Data;
 
+/**
+ * DTO de salida con los datos de un paciente.
+ *
+ * <p>Incluye el {@code idPaciente} generado por el sistema, además de todos
+ * los campos del paciente registrado.
+ */
 @Data
 public class PatientResponseDto {
     
