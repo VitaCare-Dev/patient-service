@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class Disease {
     @Column(name = "nombre_enfermedad")
     private String nombreEnfermedad;
 
+    @Lob
     @Column(name = "descripcion")
     private String descripcion;
 }
