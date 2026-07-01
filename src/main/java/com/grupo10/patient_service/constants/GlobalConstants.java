@@ -28,4 +28,7 @@ public class GlobalConstants {
 
     /** Prefijo del mensaje cuando una enfermedad no es encontrada por ID. */
     public static final String DISEASE_NOT_FOUND = "Enfermedad no encontrada con el ID: ";
+
+    /** Prefijo del mensaje cuando un paciente no es encontrado por ID de usuario. */
+    public static final String PATIENT_NOT_FOUND_FOR_USER = "Paciente no encontrado para el usuario con ID: ";
 }

@@ -127,6 +127,23 @@ class PatientServiceTest {
     }
 
     @Test
+    void getPatientByIdUsuario_found() {
+        when(patientRepository.findByIdUsuario(10L)).thenReturn(Optional.of(buildPatient()));
+
+        PatientResponseDto result = patientService.getPatientByIdUsuario(10L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getIdPaciente());
+    }
+
+    @Test
+    void getPatientByIdUsuario_notFound_throwsResourceNotFoundException() {
+        when(patientRepository.findByIdUsuario(99L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> patientService.getPatientByIdUsuario(99L));
+    }
+
+    @Test
     void getAllPatients_returnsList() {
         when(patientRepository.findAll()).thenReturn(List.of(buildPatient(), buildPatient()));
 

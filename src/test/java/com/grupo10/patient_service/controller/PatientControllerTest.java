@@ -60,6 +60,17 @@ class PatientControllerTest {
     }
 
     @Test
+    void getPatientByIdUsuario_returns200() {
+        PatientResponseDto response = new PatientResponseDto();
+        when(patientService.getPatientByIdUsuario(5L)).thenReturn(response);
+
+        ResponseEntity<PatientResponseDto> result = patientController.getPatientByIdUsuario(5L);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(response, result.getBody());
+    }
+
+    @Test
     void updatePatient_returns200() {
         PatientRequestDto request = new PatientRequestDto();
         PatientResponseDto response = new PatientResponseDto();

@@ -80,6 +80,19 @@ public class PatientService {
     }
 
     /**
+     * Recupera un paciente por el identificador de su usuario asociado.
+     *
+     * @param idUsuario identificador del usuario propietario del paciente
+     * @return DTO con los datos del paciente
+     * @throws com.grupo10.patient_service.exception.ResourceNotFoundException si no se encuentra el paciente
+     */
+    public PatientResponseDto getPatientByIdUsuario(Long idUsuario) {
+        Patient paciente = patientRepository.findByIdUsuario(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException(GlobalConstants.PATIENT_NOT_FOUND_FOR_USER + idUsuario));
+        return mapToResponse(paciente);
+    }
+
+    /**
      * Recupera todos los pacientes registrados en el sistema.
      *
      * @return lista de DTOs de pacientes; vacía si no hay registros

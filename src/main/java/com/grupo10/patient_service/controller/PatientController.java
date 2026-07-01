@@ -72,6 +72,18 @@ public class PatientController {
     }
 
     /**
+     * Obtiene un paciente por el identificador de su usuario asociado.
+     *
+     * @param idUsuario identificador del usuario propietario del paciente
+     * @return datos del paciente con estado HTTP 200 OK
+     */
+    @GetMapping("/by-usuario/{idUsuario}")
+    public ResponseEntity<PatientResponseDto> getPatientByIdUsuario(@PathVariable Long idUsuario) {
+        PatientResponseDto response = patientService.getPatientByIdUsuario(idUsuario);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
      * Actualiza los datos de un paciente existente de forma parcial.
      *
      * <p>Los campos nulos o en blanco en {@code request} son ignorados;
