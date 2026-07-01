@@ -1,10 +1,12 @@
 package com.grupo10.patient_service.service;
 
+import com.grupo10.patient_service.dto.DiseaseResponseDto;
 import com.grupo10.patient_service.dto.MedicalThresholdResponseDto;
 import com.grupo10.patient_service.exception.ResourceNotFoundException;
 import com.grupo10.patient_service.model.Disease;
 import com.grupo10.patient_service.model.MedicalThreshold;
 import com.grupo10.patient_service.model.Patient;
+import com.grupo10.patient_service.model.PatientDisease;
 import com.grupo10.patient_service.repository.DiseaseRepository;
 import com.grupo10.patient_service.repository.MedicalThresholdRepository;
 import com.grupo10.patient_service.repository.PatientDiseaseRepository;
@@ -16,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -184,5 +187,37 @@ class ChronicDiseaseServiceTest {
 
         assertThrows(ResourceNotFoundException.class,
                 () -> chronicDiseaseService.getPatientThresholds(99L));
+    }
+
+    // --- getPatientDiseases ---
+
+    @Test
+    void getPatientDiseases_returnsMappedList() {
+        Patient patient = buildPatient(LocalDate.of(1985, 1, 1));
+        Disease disease = buildDisease("Diabetes");
+        disease.setDescripcion("Enfermedad crónica que afecta el metabolismo de la glucosa");
+
+        PatientDisease patientDisease = new PatientDisease();
+        patientDisease.setPaciente(patient);
+        patientDisease.setEnfermedad(disease);
+
+        when(patientDiseaseRepository.findByPaciente_Id(1L)).thenReturn(List.of(patientDisease));
+
+        List<DiseaseResponseDto> result = chronicDiseaseService.getPatientDiseases(1L);
+
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getIdEnfermedad());
+        assertEquals("Diabetes", result.get(0).getNombreEnfermedad());
+        assertEquals("Enfermedad crónica que afecta el metabolismo de la glucosa", result.get(0).getDescripcion());
+    }
+
+    @Test
+    void getPatientDiseases_noneRegistered_returnsEmptyList() {
+        when(patientDiseaseRepository.findByPaciente_Id(1L)).thenReturn(List.of());
+
+        List<DiseaseResponseDto> result = chronicDiseaseService.getPatientDiseases(1L);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 }

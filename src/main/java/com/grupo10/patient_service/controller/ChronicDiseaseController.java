@@ -1,8 +1,10 @@
 package com.grupo10.patient_service.controller;
 
+import com.grupo10.patient_service.dto.DiseaseResponseDto;
 import com.grupo10.patient_service.dto.MedicalThresholdResponseDto;
 import com.grupo10.patient_service.dto.PatientDiseaseRequestDto;
 import com.grupo10.patient_service.service.ChronicDiseaseService;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,6 +61,18 @@ public class ChronicDiseaseController {
     @GetMapping("/thresholds/{idPaciente}")
     public ResponseEntity<MedicalThresholdResponseDto> getPatientThresholds(@PathVariable Long idPaciente) {
         MedicalThresholdResponseDto response = chronicDiseaseService.getPatientThresholds(idPaciente);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Obtiene las enfermedades crónicas asociadas a un paciente.
+     *
+     * @param idPaciente identificador del paciente
+     * @return lista de enfermedades del paciente (vacía si no tiene ninguna) con estado HTTP 200 OK
+     */
+    @GetMapping("/patient/{idPaciente}")
+    public ResponseEntity<List<DiseaseResponseDto>> getPatientDiseases(@PathVariable Long idPaciente) {
+        List<DiseaseResponseDto> response = chronicDiseaseService.getPatientDiseases(idPaciente);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

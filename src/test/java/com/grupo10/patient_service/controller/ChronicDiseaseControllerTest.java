@@ -1,8 +1,10 @@
 package com.grupo10.patient_service.controller;
 
+import com.grupo10.patient_service.dto.DiseaseResponseDto;
 import com.grupo10.patient_service.dto.MedicalThresholdResponseDto;
 import com.grupo10.patient_service.dto.PatientDiseaseRequestDto;
 import com.grupo10.patient_service.service.ChronicDiseaseService;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,6 +44,17 @@ class ChronicDiseaseControllerTest {
         when(chronicDiseaseService.getPatientThresholds(1L)).thenReturn(response);
 
         ResponseEntity<MedicalThresholdResponseDto> result = chronicDiseaseController.getPatientThresholds(1L);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(response, result.getBody());
+    }
+
+    @Test
+    void getPatientDiseases_returns200() {
+        List<DiseaseResponseDto> response = List.of(new DiseaseResponseDto());
+        when(chronicDiseaseService.getPatientDiseases(1L)).thenReturn(response);
+
+        ResponseEntity<List<DiseaseResponseDto>> result = chronicDiseaseController.getPatientDiseases(1L);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(response, result.getBody());

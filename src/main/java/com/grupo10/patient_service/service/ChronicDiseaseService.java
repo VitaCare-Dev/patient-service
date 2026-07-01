@@ -1,6 +1,7 @@
 package com.grupo10.patient_service.service;
 
 import com.grupo10.patient_service.constants.GlobalConstants;
+import com.grupo10.patient_service.dto.DiseaseResponseDto;
 import com.grupo10.patient_service.dto.MedicalThresholdResponseDto;
 import com.grupo10.patient_service.exception.ResourceNotFoundException;
 import com.grupo10.patient_service.model.Disease;
@@ -14,6 +15,7 @@ import com.grupo10.patient_service.repository.PatientDiseaseRepository;
 import com.grupo10.patient_service.repository.PatientRepository;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 
 import java.time.ZoneId;
 
@@ -128,6 +130,25 @@ public class ChronicDiseaseService {
         response.setTemperaturaMax(umbral.getTemperaturaMax());
 
         return response;
+    }
+
+    /**
+     * Recupera las enfermedades crónicas asociadas a un paciente.
+     *
+     * @param idPaciente identificador del paciente
+     * @return lista de enfermedades del paciente; vacía si no tiene ninguna registrada
+     */
+    public List<DiseaseResponseDto> getPatientDiseases(Long idPaciente) {
+        return patientDiseaseRepository.findByPaciente_Id(idPaciente).stream()
+                .map(patientDisease -> {
+                    Disease enfermedad = patientDisease.getEnfermedad();
+                    DiseaseResponseDto response = new DiseaseResponseDto();
+                    response.setIdEnfermedad(enfermedad.getIdEnfermedad());
+                    response.setNombreEnfermedad(enfermedad.getNombreEnfermedad());
+                    response.setDescripcion(enfermedad.getDescripcion());
+                    return response;
+                })
+                .toList();
     }
 
     /**
